@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { IonCol, IonItem, IonRow } from "@ionic/react";
-import { IonContent, IonHeader, IonPage, IonTitle, IonList, IonLabel, IonFabButton,IonRadioGroup, IonRadio, IonRange,  IonInput } from '@ionic/react';
-// import { add, settings, share, person, arrowForwardCircle, arrowBackCircle, arrowUpCircle, logoVimeo, logoFacebook, logoInstagram, logoTwitter } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonRouterOutlet,IonMenuButton, IonButton,IonButtons,IonMenu,IonTitle, IonList, IonLabel, IonFabButton,IonRadioGroup, IonRadio, IonRange,  IonInput, IonToolbar, IonIcon } from '@ionic/react';
+import ModalExample from "./modal";
 
 import click1 from "../audio/click1.wav";
 import click2 from "../audio/click2.wav";
@@ -15,6 +15,7 @@ import note from '../img/note.png';
 import pause from '../img/pause.png';
 import play from '../img/play.png';
 import drum from '../img/drum.png';
+// import { Route } from "react-router";
 
 class Metronome extends Component {
   constructor(props) {
@@ -108,6 +109,15 @@ class Metronome extends Component {
       count: (state.count + 1) % state.beatsPerMeasure
     }));
   };
+  handleBeats=(type)=>{
+    if(type==="plus")
+    {
+
+      this.setState({beatsPerMeasure:this.state.beatsPerMeasure===12?12:this.state.beatsPerMeasure+1})
+    }
+    else 
+    this.setState({beatsPerMeasure:this.state.beatsPerMeasure===1?1:this.state.beatsPerMeasure-1})
+  }
 
   handleBpmChange(event) {
     const bpm = event.target.value;
@@ -133,13 +143,13 @@ class Metronome extends Component {
   };
 
   handleTimeChange(event) {
-    if (event.target.value <= 20 && event.target.value >= 1) {
+    if (event.target.value <= 12 && event.target.value >= 1) {
       this.setState({
         beatsPerMeasure: event.target.value
       });
     } else {
       //disableInput should eliminate the need for this
-      alert("Please select a value between 1 & 20");
+      alert("Please select a value between 1 & 16");
       this.setState({
         beatsPerMeasure: 4
       });
@@ -171,8 +181,8 @@ class Metronome extends Component {
   getButtons(){
     const buttons=[];
       for (let i = 0; i < this.state.beatsPerMeasure; i++) {
-        buttons.push(<IonFabButton size="large" style={{  marginTop:"10px"}}color={this.state.count===i?"secondary":"primary"}>
-        <img  id="header_logo" height="40" src={note} /> </IonFabButton> );
+        buttons.push(<IonFabButton className="nap" style={{ textAlign:"center",diaplay:"flex",alignItems:"center", justifyContent:"center",  marginTop:"10px"}}color={this.state.count===i?"secondary":"primary"}>
+        <img  id="header_logo" height="35" src={note} /> </IonFabButton>);
       }
      return buttons;
   }
@@ -183,15 +193,29 @@ class Metronome extends Component {
     return (
     <IonPage className="test">
       <IonContent class="background" >
-          <IonHeader className="metHead" style={{backgroundColor: "rgb(60 159 204)", height: "60px"}}>
+         {/* <ModalExample side="start" menuId="custom" className="my-custom-menu" mode="ios" handleChange={this.handleClickChange} click={this.state.click}/> */}
+      <IonRouterOutlet id="main">
+       </IonRouterOutlet>
+       
+      <IonHeader className="metHead" style={{backgroundColor: "#55C1A2", height: "70px"}}>
             <IonRow  >
-              <IonCol className="rowsstyle" style={{ fontSize: "32px",textAlign:"center",alignItems:"center", justifyContent:"center", display:"flex", color:"yellow"}}>Metronome Beats<img  id="header_logo" height="42" src={drum} />
-              {/* <IonTitle style={{fontSize: "40px", color:"#191970"}}>Metronome Beats</IonTitle> 24 141 193*/}
+              {/* <IonCol size="auto"> 
+                <ion-header>
+                  <ion-toolbar  >
+                     <ion-buttons slot="start" >
+                        <ion-menu-button style={{backgroundColor:"#55C1A2"}}></ion-menu-button>
+                       </ion-buttons>
+                  </ion-toolbar>
+                </ion-header>
+              </IonCol> */}
+              <ModalExample side="start" menuId="custom" className="my-custom-menu" mode="ios" handleChange={this.handleClickChange} click={this.state.click}/>
+              <IonCol style={{ marginTop:"10px",fontSize: "40px",textAlign:"center",alignItems:"center", justifyContent:"center", display:"flex", color:"#000"}}>
+                Metronome <img  id="header_logo" height="42" src={drum} />
               </IonCol> 
             </IonRow>
-          </IonHeader>
-        <IonRow  style={{ marginLeft: "80px"}}>
-        <IonCol style={{ alignItems:"center", justifyContent:"space-between", flexDirection:"row", flex: "1",display:"grid", gridTemplateColumns: "60px 60px 60px 60px 60px"}}>
+        </IonHeader>
+         <IonRow style={{maxWidth:"800px", margin:"0 auto"}}>
+          <IonCol style={{marginLeft:"60px", textAlign:"center",alignItems:"center", justifyItem:"center", display:"grid", gridTemplateColumns: "repeat(4,minmax(50px,1fr)" ,minHeight:"250px"}}>
           { this.getButtons()}
           {/* <IonFabButton size="large" style={{  marginTop:"10px"}}color={this.state.count===0?"secondary":"primary"}>
           <img  id="header_logo" height="40" src={note} /> 
@@ -210,10 +234,10 @@ class Metronome extends Component {
           </IonFabButton> */}
           </IonCol>
           </IonRow>
-         <IonList className="time-signature">
+         {/* <IonList className="time-signature">
           <br/>
           <IonItem>
-            <IonLabel style={{ fontSize: "30px", color:"yellow", marginLeft: "25px", marginTop: "9px"}}>{this.state.beatsPerMeasure}/4 Time</IonLabel>
+            <IonLabel style={{ fontSize: "30px", color:"yellow", marginLeft: "25px", marginTop: "9px"}}>Beats per bar</IonLabel>
             <IonInput style={{ fontSize: "30px", color:"#FFFF33"}}
               type="number"
               min="1"
@@ -222,11 +246,13 @@ class Metronome extends Component {
               onIonChange={this.handleTimeChange}
              />
           </IonItem>
-         </IonList>
+         </IonList> */}
          
-        <IonList className="bpm-slider" style={{ marginTop: "14px"}}>
+        <IonList className="bpm-slider" style={{ marginTop: "14px",maxWidth:"700px", margin:"0 auto"}}>
           <IonCol>
-          <IonLabel  style={{ fontSize: "30px", color:"yellow", marginLeft: "30px",alignItems: "center",justifyContent:"center", display:"flex"}}>{bpm} BPM</IonLabel>
+          {/* <IonVirtualScroll [items]="items" approxItemHeight="320px">
+            </IonVirtualScroll> */}
+          <IonLabel  style={{ fontSize: "30px", color:"white", marginLeft: "30px",alignItems: "center",justifyContent:"center", display:"flex",fontFamily: "proximanova bold,Helvetica Neue,Helvetica,Arial,sans-serif"}}>{bpm} BPM</IonLabel>
             <IonRange className="range" style={{ fontSize: "25px", color:"white", heigth:"500px"}}
               type="range"
               min="60"
@@ -235,53 +261,34 @@ class Metronome extends Component {
               value={bpm}
               onIonChange={this.handleBpmChange}
             />
-            <IonFabButton onClick={this.startStop} size="large" style={{ fontSize: "19px", color:"white", margin:"10px auto" }}>
-              {playing ? <img  id="header_logo" height="40" src={pause} /> : <img  id="header_logo" height="40" src={play} /> }
-            </IonFabButton>
           </IonCol>
         </IonList>
         <br />
-        <br />
-        <IonList className="click-type">
-          <IonRadioGroup value={click} onIonChange={(e)=>this.handleClickChange(e)}>
-            <IonLabel style={{ color:"#FFFF33", marginLeft: "50px", alignItems: "center",justifyContent:"center", display:"flex" ,fontSize: "30px"}}>{click}</IonLabel>
-            <IonItem className="click-input">
-            <br />
-              <IonRow  style={{display:"flex",alignItems:'center',justifyContent:"center",width:"100%"}}>
-                <IonCol>
-              <IonLabel style={{ color:"#00FFFF", marginLeft: "50px", fontSize: "25px"}}>Click</IonLabel>
-              </IonCol>
-              <IonCol>
-              <IonRadio 
-                type="radio"
-                value="Click"
-                checked={this.state.click === "Click"}
-              />
-              </IonCol>
-              <IonCol>
-              <IonLabel style={{ color:"#00FFFF", marginLeft: "50px", fontSize: "25px"}}>Bleep</IonLabel>
-              </IonCol>
-              <IonCol>
-              <IonRadio
-                type="radio"
-                value="Bleep"
-                checked={this.state.click === "Bleep"}
-              />
-              </IonCol>
-              <IonCol>
-              <IonLabel style={{ color:"#00FFFF", marginLeft: "50px", fontSize: "25px"}}>808</IonLabel>
-              </IonCol>
-              <IonCol>
-              <IonRadio
-                type="radio"
-                value="808"
-                checked={this.state.click === "808"}
-              />
-              </IonCol>
-              </IonRow>
-              </IonItem>
-            </IonRadioGroup>
-        </IonList>
+        {/* <br /> */}
+        <IonCol style={{maxWidth:"700px", margin:"0 auto",alignItems: "center",justifyContent:"center", display:"flex"}}>
+        <IonList >
+          <IonItem className="time-signature" style={{maxWidth:"700px", margin:"0 auto"}}>
+            <IonLabel style={{ fontSize: "30px", color:"white", maxWidth:"700px", margin:"0 auto",alignItems: "center",justifyContent:"center", display:"flex",fontFamily: "proximanova bold,Helvetica Neue,Helvetica,Arial,sans-serif"}}>Beats per bar</IonLabel>
+            </IonItem>
+            <IonItem style={{maxWidth:"700px", margin:"0 auto",}}>
+            <IonFabButton color="secondary" style={{fontSize:"30px"}} onClick={()=>this.handleBeats('minus')}>-</IonFabButton>
+            <IonInput style={{ fontSize: "30px", color:"#FFF",textAlign:"center",alignItems: "center",justifyContent:"center", display:"flex"}} value={this.state.beatsPerMeasure} placeholder="Enter Input " ></IonInput>
+            {/* <IonInput style={{ fontSize: "30px", color:"#FFF", marginLeft:"20px"}}
+              type="number"
+              min="1"
+              max="12"
+              autofocus
+              onKeyDown={this.disableInput}
+              onIonChange={this.handleTimeChange}
+             /> */}
+             <IonFabButton color="secondary" style={{fontSize:"30px"}} onClick={()=>this.handleBeats("plus")}>+</IonFabButton>
+          </IonItem>
+         </IonList>
+            </IonCol>
+           
+        <IonFabButton onClick={this.startStop} color="danger" size="large" style={{ fontSize: "19px", color:"blue", margin:"10px auto" }}>
+              {playing ? <img  id="header_logo" height="40" src={pause} /> : <img  id="header_logo" height="40" src={play} /> }
+            </IonFabButton>
       </IonContent>
     </IonPage>
     );
